@@ -9,6 +9,8 @@ export interface GraphNode {
   description?: string;
   roles?: readonly string[];
   tribes?: readonly string[];
+  /** Explicit prior node IDs, never unreviewed name matches. */
+  aliases?: readonly string[];
 }
 export interface GraphEdge {
   source: string;
@@ -53,3 +55,11 @@ export interface GraphNodeFilter {
 export function filterGraphNodes<N extends GraphNode>(nodes: readonly N[], filter?: GraphNodeFilter): N[];
 /** Uses explicit node.tribes memberships, retaining original nodes and order. */
 export function graphTribeMembers<N extends GraphNode>(nodes: readonly N[], tribeId: string): N[];
+export interface GraphIdentityIndex<N extends GraphNode = GraphNode> {
+  nodeById: Map<string, N>;
+  canonicalIdByAlias: Map<string, string>;
+}
+/** Throws on duplicate IDs, conflicting aliases, or aliases shadowing another canonical node. */
+export function buildGraphIdentityIndex<N extends GraphNode>(nodes: readonly N[]): GraphIdentityIndex<N>;
+/** Matches IDs and explicit aliases only. Never matches a display name. */
+export function resolveGraphNode<N extends GraphNode>(index: GraphIdentityIndex<N>, id: string): N | undefined;

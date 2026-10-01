@@ -115,3 +115,29 @@ export function filterGraphNodes(nodes, { query = "", kind, tribe, limit = Infin
 export function graphTribeMembers(nodes, tribeId) {
   return nodes.filter((node) => (node.tribes || []).includes(tribeId));
 }
+
+/** Index reviewed canonical nodes and exact legacy IDs; never infer identities from names. */
+export function buildGraphIdentityIndex(nodes) {
+  const nodeById = new Map();
+  const canonicalIdByAlias = new Map();
+  for (const node of nodes) {
+    if (nodeById.has(node.id)) throw new Error(`Duplicate graph node ID: ${node.id}`);
+    nodeById.set(node.id, node);
+  }
+  for (const node of nodes) {
+    for (const alias of [node.id, ...(node.aliases || [])]) {
+      const existing = canonicalIdByAlias.get(alias);
+      if (existing && existing !== node.id || nodeById.has(alias) && alias !== node.id) {
+        throw new Error(`Conflicting graph identity alias: ${alias}`);
+      }
+      canonicalIdByAlias.set(alias, node.id);
+    }
+  }
+  return { nodeById, canonicalIdByAlias };
+}
+
+/** Look up a canonical node by its actual ID or an explicitly reviewed alias. */
+export function resolveGraphNode(index, id) {
+  const canonicalId = index.canonicalIdByAlias.get(id);
+  return canonicalId === undefined ? undefined : index.nodeById.get(canonicalId);
+}

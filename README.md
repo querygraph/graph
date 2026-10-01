@@ -48,6 +48,11 @@ including source citations. Inputs are never mutated.
   Input order is retained. `"all"` disables kind/tribe filtering. Nonnegative
   integer limits are supported, including zero; the default is unlimited.
 - `graphTribeMembers(nodes, tribeId)` uses exact, explicit membership only.
+- `buildGraphIdentityIndex(nodes)` indexes canonical IDs and explicit legacy IDs
+  in `node.aliases`. `resolveGraphNode(index, id)` returns the original canonical
+  node for either ID. Names never establish identity. Duplicate node IDs,
+  ambiguous aliases, or aliases shadowing another canonical ID throw rather
+  than silently merging different people.
 - `graphNodePosition(index, count)` takes an in-range zero-based index and
   returns deterministic viewport percentages. The first node is at `(50,48)`;
   subsequent nodes use Devreal's golden-angle layout with a padded border.
