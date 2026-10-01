@@ -1,0 +1,21 @@
+{
+  "name": "@querygraph/graph",
+  "version": "0.1.0",
+  "description": "Dependency-free browser graph exploration shared by Devreal and Anthropology",
+  "type": "module",
+  "license": "SEE LICENSE IN LICENSE.md",
+  "repository": "github:querygraph/graph",
+  "exports": {
+    ".": {
+      "types": "./src/index.d.ts",
+      "default": "./src/index.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "files": ["src", "README.md", "LICENSE.md"],
+  "sideEffects": false,
+  "scripts": {
+    "test": "node --test tests/*.test.mjs",
+    "prepublishOnly": "npm test"
+  }
+}
